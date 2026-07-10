@@ -1,3 +1,4 @@
+import "../styles/Home.css";
 import React, { useState } from "react";
 import API from "../api";
 
@@ -6,73 +7,92 @@ export default function Home() {
   const [images, setImages] = useState([]);
   const [selected, setSelected] = useState([]);
 
+  // Search Images
   const searchImages = async () => {
     if (!query) return;
-    const res = await API.get(`/auth/search?query=${query}`);
-    setImages(res.data.results);
+
+    try {
+      const res = await API.get(`/auth/search?query=${query}`);
+      setImages(res.data.results);
+    } catch (err) {
+      console.log(err);
+      alert("Error fetching images");
+    }
   };
 
+  // Select / Unselect Image
   const toggleSelect = (url) => {
     if (selected.includes(url)) {
-      setSelected(selected.filter(i => i !== url));
+      setSelected(selected.filter((img) => img !== url));
     } else {
       setSelected([...selected, url]);
     }
   };
 
+  // Save History
   const saveHistory = async () => {
-    await API.post("/auth/save-history", {
-      keyword: query,
-      images: selected
-    });
-    alert("Saved Successfully ✅");
+    try {
+      await API.post("/auth/save-history", {
+        keyword: query,
+        images: selected,
+      });
+
+      alert("Saved Successfully ✅");
+    } catch (err) {
+      console.log(err);
+      alert("Failed to save history");
+    }
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2 style={{ textAlign: "center" }}>Search Images (Unsplash)</h2>
+    <div className="container">
 
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
+      <h1 className="title">IMAGE SEARCHING PAGE</h1>
+
+      <div className="search-container">
+
         <input
           type="text"
           placeholder="Search anything..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          style={{ width: "300px", padding: "10px", fontSize: "18px" }}
+          className="search-input"
         />
-        <button onClick={searchImages} style={{ padding: "10px 20px", marginLeft: "10px" }}>Search</button>
-        <button onClick={saveHistory} style={{ padding: "10px 20px", marginLeft: "10px" }}>Save</button>
 
-        {/* History Page button */}
-        <button
-          onClick={() => window.location.href = "/history"}
-          style={{ padding: "10px 20px", marginLeft: "10px" }}
-        >
-          History
-        </button>
+        <div className="button-group">
+
+          <button onClick={searchImages}>
+            Search
+          </button>
+
+          <button onClick={saveHistory}>
+            Save
+          </button>
+
+          <button onClick={() => (window.location.href = "/history")}>
+            History
+          </button>
+
+        </div>
+
       </div>
 
-      <div style={{
-        marginTop: "35px",
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        gap: "12px"
-      }}>
+      <div className="image-grid">
         {images.map((img) => (
           <img
             key={img.id}
             src={img.urls.small}
-            alt=""
+            alt={img.alt_description || "Unsplash"}
             onClick={() => toggleSelect(img.urls.small)}
-            style={{
-              width: "100%",
-              borderRadius: "8px",
-              border: selected.includes(img.urls.small) ? "4px solid red" : "2px solid transparent",
-              cursor: "pointer"
-            }}
+            className={
+              selected.includes(img.urls.small)
+                ? "selected-image"
+                : "image-item"
+            }
           />
         ))}
       </div>
+
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import "../styles/Login.css";
 import React from "react";
 
 export default function Login() {
@@ -7,14 +8,14 @@ export default function Login() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "120px" }}>
-      <h1>Login to Continue</h1>
+      <h1>Login to continue </h1>
       <button style={{
         padding: "14px 22px",
         fontSize: "18px",
         cursor: "pointer",
         borderRadius: "6px",
         border: "none",
-        backgroundColor: "#4285F4",
+        backgroundColor: "#2257abff",
         color: "#fff",
         marginTop: "20px"
       }} onClick={handleGoogleLogin}>
